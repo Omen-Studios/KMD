@@ -64,17 +64,36 @@ $result = mysqli_query($connect, $query);
       <hr class="sidebar-divider">
 
       <!-- Heading -->
-      <div class="sidebar-heading">
-        Essentials
+      <?php 
+        
+            if($_SESSION['staffposition'] >= 2){
+            echo '<div class="sidebar-heading">
+        Driver Lab
       </div>
-
-      <!-- Nav Item - Pages Collapse Menu -->
-      <li class="nav-item active">
+	  
+        
+       <li class="nav-item">
+        <a class="nav-link" href="https://docs.google.com/document/d/1sscurvXL0xk33FF_R-39OHs6gw-aoGcu1jA0JehsKj4/edit?usp=sharing" aria-labelledby="headingTwo">
+            <i class="fas fa-user"></i>
+            <span>Convoy Positioning Policy</span>
+            </a>
+        </li>';}?>
+        
+        <?php if($_SESSION['staffposition'] >= 4){
+                echo '
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">
+        Management Interface
+      </div>
+	  
+        
+       <li class="nav-item">
         <a class="nav-link" href="staff.php" aria-labelledby="headingTwo">
             <i class="fas fa-user"></i>
             <span>Staff List</span>
             </a>
-        </li>
+        </li>';
+            }?>
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block">
@@ -148,7 +167,7 @@ $result = mysqli_query($connect, $query);
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $_SESSION['username']; ?> | Truck #<?php echo $_SESSION['badge']; ?></span>
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $_SESSION['username']; ?> | <strong><?php echo $_SESSION['role']; ?></strong></span>
                 <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
               </a>
               <!-- Dropdown - User Information -->
@@ -178,13 +197,13 @@ $result = mysqli_query($connect, $query);
         <div class="container-fluid">
 
           <!-- Page Heading -->
-          <h1 class="h3 mb-2 text-gray-800">Darklite Staff</h1>
-          <p class="mb-4">Here is a up-to-date Darklite Logistics Staff Team List. Want to know their truck and who has senoirity? Check here!</p>
+          <h1 class="h3 mb-2 text-gray-800">Vista Trucking Limited Staff</h1>
+          <p class="mb-4">This is a Live Tracking List of all Vista Trucking Employee Stats. This makes it easier for Logistics Managers to rate the drivers! Keep an eye on this!</p>
 
           <!-- DataTales Example -->
           <div class="card shadow mb-4">
             <div class="card-header py-3">
-              <h6 class="m-0 font-weight-bold text-primary">Darklite Staff</h6>
+              <h6 class="m-0 font-weight-bold text-primary">Staff List</h6>
             </div>
             <div class="card-body">
               <div class="table-responsive">
@@ -204,14 +223,14 @@ $result = mysqli_query($connect, $query);
                 while($row = mysqli_fetch_array($result)){
                         echo '
                         <tr>
-                        <td>'.$row["driverid"].'</td>
-                        <td>'.$row["username"].'</td>
-                        <td>'.$row["badge"].'</td>
-                        <td>'.$row["empdate"].'</td>
-                        <td>'.$row["position"].'</td>
-                        <td><a href="'.$row['profileLink'].'"><i class="fas fa-user"></i> - <span>User Profile</span></a></td>
-                        <td>'.$row["mileage"].'</td>
-                        
+                        <td width="14%"  height="250"><img src="img/'.$row['profileLink'].'" width="100%" height="100%"/></td>
+                        <td width="14%">'.$row["username"].'</td>
+                        <td width="14%">'.$row["badge"].'</td>
+                        <td width="14%">'.$row["empdate"].'</td>
+                        <td width="14%">'.$row["position"].'</td>
+                        <td width="14%">Empty, for now.</td>
+                        <td width="14%">'.$row["mileage"].'</td>
+                        </tr>
                         ';
                 }
                 ?>
@@ -230,7 +249,7 @@ $result = mysqli_query($connect, $query);
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2019</span>
+            <span>Copyright &copy; Vista Trucking Limited 2019</span>
           </div>
         </div>
       </footer>

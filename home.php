@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <?php
-
+include("include/conn.php");
 session_start();
 
-if(!isset($_SESSION['username'])){
-    header('location:index.php');
-}
+$name = $_SESSION['username'];
+$pass = $_SESSION['password'];
+
+$pass = mysqli_real_escape_string($conn, $_SESSION['password']);
+
+$s = "select * from users where username='$name' && password='$pass'";
+
+$result = mysqli_query($conn,$s);
+
+$num = mysqli_num_rows($result);
+$userProfile = mysqli_fetch_assoc($result);
+$badge = $userProfile['badge'];
+$_SESSION['badge'] = $badge;
+$picture = $userProfile['image'];
+$_SESSION['image'] = $picture;
+$staff = $userProfile['staffposition'];
+$_SESSION['staffposition'] = $staff;
+
+//if(!isset($_SESSION['username'])){
+   // header('location:index.php');
+//}
 ?>
 <html lang="en">
 
@@ -17,7 +35,7 @@ if(!isset($_SESSION['username'])){
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>Darklite Trucking - Dashboard</title>
+  <title>Vista Trucking - Dashboard</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -61,7 +79,22 @@ if(!isset($_SESSION['username'])){
       <?php 
         
             if($_SESSION['staffposition'] >= 2){
-                echo '<div class="sidebar-heading">
+            echo '<div class="sidebar-heading">
+        Driver Lab
+      </div>
+	  
+        
+       <li class="nav-item">
+        <a class="nav-link" href="https://docs.google.com/document/d/1sscurvXL0xk33FF_R-39OHs6gw-aoGcu1jA0JehsKj4/edit?usp=sharing" aria-labelledby="headingTwo" target="_NEW">
+            <i class="fas fa-user"></i>
+            <span>Convoy Positioning Policy</span>
+            </a>
+        </li>';}?>
+        
+        <?php if($_SESSION['staffposition'] >= 4){
+                echo '
+                <hr class="sidebar-divider">
+                <div class="sidebar-heading">
         Management Interface
       </div>
 	  
@@ -72,7 +105,7 @@ if(!isset($_SESSION['username'])){
             <span>Staff List</span>
             </a>
         </li>';
-            } ?>
+            }?>
 
       <!-- Nav Item - Pages Collapse Menu
       <li class="nav-item">
@@ -106,13 +139,13 @@ if(!isset($_SESSION['username'])){
         </div>
       </li> -->
 
-      <!-- Divider -->
-      <hr class="sidebar-divider">
+      <!-- Divider 
+      <hr class="sidebar-divider">-->
 
-      <!-- Heading -->
+      <!-- Heading 
       <div class="sidebar-heading">
         Addons
-      </div>
+      </div>-->
 
       <!-- Nav Item - Pages Collapse Menu
       <li class="nav-item">
@@ -206,8 +239,8 @@ if(!isset($_SESSION['username'])){
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $_SESSION['username']; ?> | Truck #<?php echo $_SESSION['badge']; ?></span>
-                <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small"><?php echo $_SESSION['username']; ?> | <b><?php echo $_SESSION['role']; ?></b></span>
+                <img class="img-profile rounded-circle" src="img/cad.png" width="60" height="60">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
@@ -287,11 +320,27 @@ if(!isset($_SESSION['username'])){
                       <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Trip Quota</div>
                       <div class="row no-gutters align-items-center">
                         <div class="col-auto">
-                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">Trip Quota Complete</div>
+                          <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800"><?php echo $_SESSION['loadcount']; ?> / <?php echo $_SESSION['quota']; ?></div>
                         </div>
+                        
+                        <?php
+                        
+                        if($_SESSION['loadcount'] <= 2){
+                            $width = '20%';
+                        }elseif($_SESSION['loadcount'] <= 4){
+                            $width = '40%';
+                        }elseif($_SESSION['loadcount'] <= 6){
+                            $width= '60%';
+                        }elseif($_SESSION['loadcount'] <= 8){
+                            $width = '80%';
+                        }elseif($_SESSION['loadcount'] >= 9){
+                            $width = '100%';
+                        }
+                        
+                        ?>
                         <div class="col">
                           <div class="progress progress-sm mr-2">
-                            <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+                            <div class="progress-bar bg-success" role="progressbar" style="width: <?php echo $width; ?>" aria-valuenow="<?php echo $_SESSION['quota'];?>" aria-valuemin="0" aria-valuemax="100"></div>
                           </div>
                         </div>
                       </div>
@@ -416,14 +465,14 @@ if(!isset($_SESSION['username'])){
 
               <!-- Illustrations -->
               <div class="card shadow mb-4">
-                <div class="card-header bg-danger py-3">
+                <div class="card-header bg-warning py-3">
                   <h6 class="m-0 font-weight-bold text-white">Staff Notice</h6>
                 </div>
-                <div class="card-body bg-warning">
+                <div class="card-body">
                   <div class="text-center">
-                    <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="img/undraw_posting_photo.svg" alt="">
+                    <!--<img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;" src="img/undraw_posting_photo.svg" alt="">-->
                   </div>
-                  <p>There is some stuff we need to work on, but that will be announced soon!</p>
+                  <p>As announced, our Dashboard is no where near completion, yet, this does not mean you cannot complete your duties! Continue to drive and meet your quotas in order to drive up company morale and earn your way up the ranks!</p>
                 </div>
               </div>
               </div>
@@ -434,9 +483,11 @@ if(!isset($_SESSION['username'])){
               <h6 class="m-0 font-weight-bold text-primary">Company Message</h6>
                 </div>
                 <div class="card-body">
-                  <p>
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed imperdiet, tellus eu laoreet pellentesque, diam nisl efficitur mi, ut pharetra tortor tellus et elit. Etiam non accumsan justo. Mauris interdum lorem luctus, congue ex vel, sagittis massa. Proin orci risus, tempus at pulvinar laoreet, cursus ut orci. Aliquam porttitor elit sit amet tellus aliquam, sed vehicula nisi euismod. Nullam et auctor turpis, faucibus tristique tellus. In dapibus mi nisl, eget mattis elit mollis eu. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce vehicula sodales turpis pharetra ullamcorper. Sed vestibulum turpis egestas, ultrices lacus sed, tempus mauris. Nunc quis libero quis elit vestibulum porttitor a at augue. Aliquam non nibh suscipit nisl maximus bibendum at eu urna. Morbi metus lectus, euismod id facilisis vel, iaculis vel nisi.</p>
-                  <p class="mb-0">Before working with this theme, you should become familiar with the Bootstrap framework, especially the utility classes.</p>
+                  <p>Vista Trucking Limited is a ATS and ETS2 Trucking Company founded on the fundamentals of Trucking and Simulation. Here at Vista, our aim is to provide a calm and collective community of drivers and enthusiasts who enjoy relaxing and just hanging out. Vista hosts convoys constantly, so no driver is ever left out if they want to ride along. Our drivers vary in all different ways. We support and Ally with the LGBTQ2+ community without discrimination from anyone. We are also a very diverse crowd with drivers from Canada, the United States of America, United Kingdom, United Arab Emirates and all over the globe!</p>
+				  <br><p>If you are new to the company, or just reading up, Welcome and we hope to see you on the road! To those that are already part of the team, Thank you for making Vista Trucking what it is today: A fantastic, fun, inclusive company that puts focus on Realism, Professionalism and Enjoyability.</p>
+				  <br><p>Yours Truly,<br>
+				  Zexar (Nick)<br>
+				  Company Founder / Director</p>
                 </div>
               </div>
             </div>
@@ -452,7 +503,7 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed imperdiet, tellus e
       <footer class="sticky-footer bg-white">
         <div class="container my-auto">
           <div class="copyright text-center my-auto">
-            <span>Copyright &copy; Your Website 2019</span>
+            <span>Copyright &copy; Vista Trucking Limited 2019</span>
           </div>
         </div>
       </footer>

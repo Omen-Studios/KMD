@@ -5,7 +5,7 @@ session_start();
 
 
 
-$con = mysqli_connect('localhost', 'dllroot', 'Darklite53');
+$con = mysqli_connect('localhost', 'rootuser', 'Vanity-99');
 mysqli_select_db($con, "dllogbook");
 
 $name = $_POST['user'];

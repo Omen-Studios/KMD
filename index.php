@@ -1,9 +1,67 @@
 <?php
 session_start();
+include("include/conn.php");
 
-if(isset($_SESSION['username'])){
-    header('location:home.php');
+if($_SERVER['REQUEST_METHOD'] == "POST")
+{
+	//Username and Password sent from here
+	$username = mysqli_real_escape_string($conn, $_POST['user']);
+	$password = mysqli_real_escape_string($conn, $_POST['password']);
+	$password = md5($password);
+	$sql = "SELECT * FROM users WHERE username='$username' AND password='$password'";
+	$query = mysqli_query($conn, $sql);
+	$res = mysqli_num_rows($query);
+	$result = mysqli_query($conn,$sql);
+
+	
+	$userProfile = mysqli_fetch_assoc($result);
+	$staff = $userProfile['staffposition'];
+	$_SESSION['staffposition'] = $staff;
+	$picture = $userProfile['image'];
+	$_SESSION['image'] = $picture;
+	$loads = $userProfile['loadcount'];
+	$_SESSION['loadcount'] = $loads;
+	$quota = $userProfile['quota'];
+	$_SESSION['quota'] = $quota;
+	
+	
+	if($staff == 2){
+		$position = "Driver";
+	}elseif($staff == 3){
+		$position = "Senior Driver";
+	}elseif($staff == 4){
+		$position = "Instructor";
+	}elseif($staff == 5){
+		$position = "Logistics Manager (EU)";
+	}elseif($staff == 6){
+		$position = "Logistics Manager (NA)";
+	}elseif($staff == 7){
+		$position = "Company Director";
+	}else{
+		$position = "Unset";
+	}
+	$_SESSION['role'] = $position;
+	
+	
+	if($res == 1 && $staff >= 2){
+		$_SESSION['username'] = $username;
+		$_SESSION['name'] = $username;
+		$_SESSION['password'] = $password;
+		header('location:home.php');
+	}elseif($res == 0){
+		echo('<script type="text/javascript">alert("You have entered an invalid User or Password")</script>');
+		session_destroy();
+	}elseif($res == 1 && $staff <= 0){
+		echo('<script type="text/javascript">alert("Your account has not yet been verified.")</script>');
+		session_destroy();
+	}elseif($res == 1 && $staff <= 1){
+		echo('<script type="text/javascript">alert("You are currently SUSPENDED. Please see Logistics Manager.")</script>');
+		session_destroy();
+	}else{
+		echo('<script type="text/javascript">alert("An Unknown Error Has Occured: EC-W02: Permissions)</script>');
+	}
 }
+
 
 if(isset($_SESSION['verified'])){
 	echo '<script type="text/javascript">alert("Unfortunately, your account has not yet been verified by Management, please try again later.");</script>';
@@ -20,7 +78,7 @@ if(isset($_SESSION['verified'])){
   <meta name="description" content="">
   <meta name="author" content="">
 
-  <title>DLL - Internal Logbook - Login System</title>
+  <title>VTL - Internal Logbook - Login System</title>
 
   <!-- Custom fonts for this template-->
   <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
@@ -50,7 +108,7 @@ if(isset($_SESSION['verified'])){
                   <div class="text-center">
                     <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                   </div>
-                  <form action="validation.php" class="user" method="post">
+                  <form action="<?php $_SERVER['PHP_SELF'];?>" class="user" method="post">
                     <div class="form-group">
                       <input type="text" class="form-control form-control-user" name="user" aria-describedby="emailHelp" placeholder="Username" required>
                     </div>
@@ -68,6 +126,15 @@ if(isset($_SESSION['verified'])){
                     </button>
                   </form>
                   <hr>
+				  <div class="text-center">
+                    <h1 class="h6 text-gray-900 mb-4">New Driver? Register Here</h1>
+                  </div>
+					<form action="register.php" class="user">
+				  <button class="btn btn-primary btn-user btn-block">
+                      Register
+                    </button>
+					</form>
+					<hr>
                   <div class="text-center">
                     Designed by Darklite Software
                   </div>

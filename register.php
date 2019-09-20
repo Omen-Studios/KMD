@@ -1,4 +1,23 @@
+
 <!DOCTYPE html>
+<?php
+include('include/conn.php');
+if($_SERVER['REQUEST_METHOD'] == "POST")
+{
+	//Username and Password sent from here
+	$username = mysqli_real_escape_string($conn, $_POST['user']);
+	$password = mysqli_real_escape_string($conn, $_POST['password']);
+	$password = md5($password);
+	$sql = "INSERT INTO users(username,password,staffposition) values ('$username', '$password','0')";
+	$result = mysqli_query($conn, $sql);
+	
+	if($result == 1){
+		header('location:index.php');
+	}else{
+		echo 'Unsuccessful Creation';
+	}
+}
+?>
 <html lang="en">
 
 <head>
@@ -34,7 +53,7 @@
               <div class="text-center">
                 <h1 class="h4 text-gray-900 mb-4">Create an Account!</h1>
               </div>
-              <form class="user" action="registration.php" method="post">
+              <form class="user" action="<?php $_SERVER['PHP_SELF'];?>" method="post">
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
                     <input name="user" type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="Username" required>
